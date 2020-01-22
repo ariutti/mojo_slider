@@ -40,8 +40,13 @@ SoftwareSerial mySerial(10, 11);      // Uno RX (TFMINI TX), Uno TX (TFMINI RX)
 TFMini tfmini;
 
 #define PAUSE 25
+bool stringComplete = false;
+String inputString = "";
 
-void setup() {
+
+// SETUP ////////////////////////////////////////////////////////////////////////////////////////
+void setup() 
+{
   // Step 1: Initialize hardware serial port (serial debug port)
   Serial.begin(9600);
   // wait for serial port to connect. Needed for native USB port only
@@ -57,10 +62,20 @@ void setup() {
 }
 
 
-void loop() {
+// LOOP /////////////////////////////////////////////////////////////////////////////////////////
+void loop() 
+{
   // Take one TF Mini distance measurement
-  uint16_t dist = tfmini.getDistance();
-  uint16_t strength = tfmini.getRecentSignalStrength();
+  int16_t dist = tfmini.getDistance();
+  int16_t strength = tfmini.getRecentSignalStrength();
+
+  /*
+  if( dist == -1)
+  {
+    Serial.println("\twe get an error!");
+    //tfmini.begin(&mySerial);
+  }
+  */
 
   // Display the measurement
   //Serial.print(dist);
@@ -69,6 +84,38 @@ void loop() {
   
   Serial.print(dist); Serial.print("_");Serial.println(strength);
 
+  if(stringComplete) {
+    if( inputString[0] == 'a' ) 
+    { 
+      //Serial.println("corrisponde ------------------------------------------------------->"); 
+      tfmini.setStandardOutputMode();
+      
+    };
+    //Serial.println( inputString );
+    //Serial.println( inputString.length() );
+    stringComplete = false;
+    inputString="";
+  }
+
   // Wait some short time before taking the next measurement
   delay( PAUSE );  
+}
+
+
+// SERIAL EVENT /////////////////////////////////////////////////////////////////////////////////
+void serialEvent() 
+{
+  while (Serial.available()) 
+  {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the inputString:
+    inputString += inChar;
+    // if the incoming character is a newline, set a flag so the main loop can
+    // do something about it:
+    if (inChar == '\n') 
+    {
+      stringComplete = true;
+    }
+  }
 }
