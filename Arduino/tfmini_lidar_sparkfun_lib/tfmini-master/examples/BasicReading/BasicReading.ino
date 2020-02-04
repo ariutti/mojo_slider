@@ -1,6 +1,3 @@
-// https://github.com/betaflight/betaflight/issues/7862
-
-
 /*
 Example code for Benewake TFMini time-of-flight distance sensor. 
 by Peter Jansen (December 11/2017)
@@ -39,20 +36,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 SoftwareSerial mySerial(10, 11);      // Uno RX (TFMINI TX), Uno TX (TFMINI RX)
 TFMini tfmini;
 
-#define PAUSE 25
-bool stringComplete = false;
-String inputString = "";
-
-
-// SETUP ////////////////////////////////////////////////////////////////////////////////////////
-void setup() 
-{
+void setup() {
   // Step 1: Initialize hardware serial port (serial debug port)
-  Serial.begin(9600);
+  Serial.begin(115200);
   // wait for serial port to connect. Needed for native USB port only
-  while (!Serial) {};
-
-  delay(1000);
+  while (!Serial);
      
   Serial.println ("Initializing...");
 
@@ -64,61 +52,17 @@ void setup()
 }
 
 
-// LOOP /////////////////////////////////////////////////////////////////////////////////////////
-void loop() 
-{
+void loop() {
   // Take one TF Mini distance measurement
-  int16_t dist = tfmini.getDistance();
-  int16_t strength = tfmini.getRecentSignalStrength();
-
-  /*
-  if( dist == -1)
-  {
-    Serial.println("\twe get an error!");
-    //tfmini.begin(&mySerial);
-  }
-  */
+  uint16_t dist = tfmini.getDistance();
+  uint16_t strength = tfmini.getRecentSignalStrength();
 
   // Display the measurement
-  Serial.println(dist);
-  //Serial.print("\t");
-  //Serial.print(" cm      sigstr: ");
-  //Serial.println(strength);
-  
-  //Serial.print(dist); Serial.print("_");Serial.println(strength);
-
-  if(stringComplete) {
-    if( inputString[0] == 'a' ) 
-    { 
-      //Serial.println("corrisponde ------------------------------------------------------->"); 
-      tfmini.setStandardOutputMode();
-      
-    };
-    //Serial.println( inputString );
-    //Serial.println( inputString.length() );
-    stringComplete = false;
-    inputString="";
-  }
+  Serial.print(dist);
+  Serial.print(" cm      sigstr: ");
+  Serial.println(strength);
 
   // Wait some short time before taking the next measurement
-  delay( PAUSE );  
+  delay(25);  
 }
 
-
-// SERIAL EVENT /////////////////////////////////////////////////////////////////////////////////
-void serialEvent() 
-{
-  while (Serial.available()) 
-  {
-    // get the new byte:
-    char inChar = (char)Serial.read();
-    // add it to the inputString:
-    inputString += inChar;
-    // if the incoming character is a newline, set a flag so the main loop can
-    // do something about it:
-    if (inChar == '\n') 
-    {
-      stringComplete = true;
-    }
-  }
-}

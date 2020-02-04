@@ -24,7 +24,7 @@ void setup()
   // based on the list of serial ports printed from the
   //previous command, change the 0 to your port's number:
   // initialize the serial port:
-  myPort = new Serial(this, Serial.list()[1], 9600);
+  myPort = new Serial(this, Serial.list()[0], 9600);
   
   meter = new Meter( (width-meterW)*0.5, (height-meterH)*0.5, meterW, meterH, 30, 120);
   

@@ -1,6 +1,3 @@
-// https://github.com/betaflight/betaflight/issues/7862
-
-
 /*
 Example code for Benewake TFMini time-of-flight distance sensor. 
 by Peter Jansen (December 11/2017)
@@ -32,93 +29,60 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
 */
 
-#include <SoftwareSerial.h>
-#include "TFMini.h"
+/*
+ * Maple Mini
+ * RX1 Pin 25, 5V tolerant -> TX TF Mini
+ * TX1 Pin 26, 5V tolerant -> RX TF Mini
+ */
 
-// Setup software serial port 
-SoftwareSerial mySerial(10, 11);      // Uno RX (TFMINI TX), Uno TX (TFMINI RX)
+/*
+ * Bluepill
+ * RX1 Pin PA10 (31), 5V tolerant -> TX TF Mini
+ * TX1 Pin PA9 (30), 5V tolerant -> RX TF Mini
+ */
+ 
+#include "TFMini.h"
 TFMini tfmini;
 
-#define PAUSE 25
-bool stringComplete = false;
-String inputString = "";
 
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(2, 3);      // Uno RX (TFMINI TX), Uno TX (TFMINI RX)
 
-// SETUP ////////////////////////////////////////////////////////////////////////////////////////
-void setup() 
-{
+#define PAUSE 100
+
+void setup() {
   // Step 1: Initialize hardware serial port (serial debug port)
   Serial.begin(9600);
   // wait for serial port to connect. Needed for native USB port only
-  while (!Serial) {};
-
-  delay(1000);
+  while (!Serial);
      
   Serial.println ("Initializing...");
 
   // Step 2: Initialize the data rate for the SoftwareSerial port
-  mySerial.begin(TFMINI_BAUDRATE);
+  mySerial.begin( 115200 );
 
   // Step 3: Initialize the TF Mini sensor
-  tfmini.begin(&mySerial);    
+  tfmini.begin(&mySerial);
+  delay(100);
+  
+  // Step 4: Initialize single measurement mode with external trigger
+  tfmini.setSingleScanMode();    
 }
 
 
-// LOOP /////////////////////////////////////////////////////////////////////////////////////////
-void loop() 
-{
+void loop() {
   // Take one TF Mini distance measurement
+  tfmini.externalTrigger();
   int16_t dist = tfmini.getDistance();
   int16_t strength = tfmini.getRecentSignalStrength();
 
-  /*
-  if( dist == -1)
-  {
-    Serial.println("\twe get an error!");
-    //tfmini.begin(&mySerial);
-  }
-  */
-
   // Display the measurement
-  Serial.println(dist);
-  //Serial.print("\t");
-  //Serial.print(" cm      sigstr: ");
-  //Serial.println(strength);
-  
-  //Serial.print(dist); Serial.print("_");Serial.println(strength);
+  Serial.print("triggered - ");
+  Serial.print(dist);
+  Serial.print(",");
+  Serial.println(strength);
 
-  if(stringComplete) {
-    if( inputString[0] == 'a' ) 
-    { 
-      //Serial.println("corrisponde ------------------------------------------------------->"); 
-      tfmini.setStandardOutputMode();
-      
-    };
-    //Serial.println( inputString );
-    //Serial.println( inputString.length() );
-    stringComplete = false;
-    inputString="";
-  }
-
-  // Wait some short time before taking the next measurement
-  delay( PAUSE );  
-}
-
-
-// SERIAL EVENT /////////////////////////////////////////////////////////////////////////////////
-void serialEvent() 
-{
-  while (Serial.available()) 
-  {
-    // get the new byte:
-    char inChar = (char)Serial.read();
-    // add it to the inputString:
-    inputString += inChar;
-    // if the incoming character is a newline, set a flag so the main loop can
-    // do something about it:
-    if (inChar == '\n') 
-    {
-      stringComplete = true;
-    }
-  }
+  // Wait some time before taking the next measurement
+  // without delay, measurement is super fast
+  delay(PAUSE);  
 }

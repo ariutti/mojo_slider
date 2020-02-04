@@ -40,8 +40,6 @@ SoftwareSerial mySerial(10, 11);      // Uno RX (TFMINI TX), Uno TX (TFMINI RX)
 TFMini tfmini;
 
 #define PAUSE 25
-bool stringComplete = false;
-String inputString = "";
 
 
 // SETUP ////////////////////////////////////////////////////////////////////////////////////////
@@ -87,38 +85,6 @@ void loop()
   
   //Serial.print(dist); Serial.print("_");Serial.println(strength);
 
-  if(stringComplete) {
-    if( inputString[0] == 'a' ) 
-    { 
-      //Serial.println("corrisponde ------------------------------------------------------->"); 
-      tfmini.setStandardOutputMode();
-      
-    };
-    //Serial.println( inputString );
-    //Serial.println( inputString.length() );
-    stringComplete = false;
-    inputString="";
-  }
-
   // Wait some short time before taking the next measurement
   delay( PAUSE );  
-}
-
-
-// SERIAL EVENT /////////////////////////////////////////////////////////////////////////////////
-void serialEvent() 
-{
-  while (Serial.available()) 
-  {
-    // get the new byte:
-    char inChar = (char)Serial.read();
-    // add it to the inputString:
-    inputString += inChar;
-    // if the incoming character is a newline, set a flag so the main loop can
-    // do something about it:
-    if (inChar == '\n') 
-    {
-      stringComplete = true;
-    }
-  }
 }
