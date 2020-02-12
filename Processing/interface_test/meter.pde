@@ -23,11 +23,15 @@ class Meter
     
     // display some text
     pushStyle();
-    textAlign(LEFT);
+    //textAlign(LEFT);
+    textAlign(RIGHT);
     textFont(font, 18);
     fill(255);
-    text( "maxS:" + maxStrenght, 0, 20);
-    text( "minS:" + minStrenght, 0, 40);
+    //text( "maxS:" + maxStrenght, 0, 20);
+    //text( "minS:" + minStrenght, 0, 40);
+    
+    text( "maxS:" + maxStrenght, width, 20);
+    text( "minS:" + minStrenght, width, 40);
     popStyle();
     
     // display the cursor
@@ -57,7 +61,8 @@ class Meter
   void setDist(int _value)
   {
     dist = _value;
-    mapDist = width - (map( dist, MIN, MAX, 0.0, 1.0)* width);
+    //mapDist = width - (map( dist, MIN, MAX, 0.0, 1.0)* width);
+    mapDist = map( dist, MIN, MAX, 0.0, 1.0)* width;
     mapDist = constrain( mapDist, 0.0, width);
     println( "dist: " + dist + ", [" + mapDist + "];");
   }

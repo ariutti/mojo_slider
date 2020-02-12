@@ -81,24 +81,9 @@ void loop()
 
   fDist = dist * A + fPrevDist * B;
   fPrevDist = fDist;
-
-  /*
-  if( dist == -1)
-  {
-    Serial.println("\twe get an error!");
-    //tfmini.begin(&mySerial);
-  }
-  */
-
-  /*
-  // Display the measurement
-  Serial.print(dist);
-  Serial.print("\t");
-  Serial.print(" cm      sigstr: ");
-  Serial.println(strength);
-  */
   
-  if(bSendSerial){ Serial.print( int(fDist) ); Serial.print("_");Serial.println(strength); }
+  //if(bSendSerial){ Serial.print( int(fDist) ); Serial.print("_");Serial.println(strength); }
+  if(bSendSerial){ Serial.print( int(fDist) ); Serial.println(";"); }
 
   // Wait some short time before taking the next measurement
   delay( PAUSE );  
