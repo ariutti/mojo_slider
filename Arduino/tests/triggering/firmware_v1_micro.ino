@@ -66,6 +66,9 @@ void setup()
   tfminiB.begin( &mySerialB, true );
   Serial.println("lidar B begin");
 
+	Serial.println("\nSend 1 to trigger lidar a");
+	Serial.println("\nSend 2 to trigger lidar b");
+
 	triggerFlag = false;
 }
 
