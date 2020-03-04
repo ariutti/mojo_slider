@@ -63,6 +63,7 @@ class TFMini {
 		boolean begin(Stream* _streamPtr, bool externalTriggering = false);
 		void setExternalTriggerOutputMode();
 		void sendTrigger();
+		void setInitializeConfigurationMode();
 
   private:
     Stream* streamPtr;

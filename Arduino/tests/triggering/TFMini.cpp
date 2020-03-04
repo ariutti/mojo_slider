@@ -190,6 +190,7 @@ int TFMini::takeMeasurement()
 // custom function - by AG
 void TFMini::setExternalTriggerOutputMode() {
 	// Set to "external triggering" output mode (this is found in the debug documents)
+	// initializeConfigurationMode();
 	streamPtr->write((uint8_t)0x42);
 	streamPtr->write((uint8_t)0x57);
 	streamPtr->write((uint8_t)0x02);
@@ -222,6 +223,7 @@ boolean TFMini::begin(Stream* _streamPtr, bool externalTriggering = false) {
 }
 
 void TFMini::sendTrigger() {
+	// initializeConfigurationMode();
 	streamPtr->write((uint8_t)0x42);
 	streamPtr->write((uint8_t)0x57);
 	streamPtr->write((uint8_t)0x02);
@@ -230,5 +232,17 @@ void TFMini::sendTrigger() {
 	streamPtr->write((uint8_t)0x00);
 	streamPtr->write((uint8_t)0x00);
 	streamPtr->write((uint8_t)0x41);
+	// A delay in here ? - by AG
+}
+
+void TFMini::setInitializeConfigurationMode() {
+	streamPtr->write((uint8_t)0x42);
+	streamPtr->write((uint8_t)0x57);
+	streamPtr->write((uint8_t)0x02);
+	streamPtr->write((uint8_t)0x00);
+	streamPtr->write((uint8_t)0x00);
+	streamPtr->write((uint8_t)0x00);
+	streamPtr->write((uint8_t)0x01);
+	streamPtr->write((uint8_t)0x02);
 	// A delay in here ? - by AG
 }

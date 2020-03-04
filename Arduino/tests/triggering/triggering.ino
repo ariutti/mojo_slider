@@ -79,7 +79,7 @@ void loop()
 		triggerFlag = true;
 		switch (tmp) {
 			case 1:
-				trigger = true
+				trigger = true;
 			break;
 			case 2:
 				trigger = false;
@@ -93,6 +93,7 @@ void loop()
 	if (triggerFlag) {
 		// send proper trigger
 		if (trigger) {
+			tfminiA.sendTrigger();
 			mySerialA.listen();
 		  // Take one TF Mini distance measurement
 		  int16_t distA = tfminiA.getDistance();
@@ -106,6 +107,7 @@ void loop()
 		  Serial.println("\t");
 		} else {
 			// Now listen on the second port
+			tfminiB.sendTrigger();
 		  mySerialB.listen();
 		  // Take one TF Mini distance measurement
 		  int16_t distB = tfminiB.getDistance();
