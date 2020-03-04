@@ -89,16 +89,14 @@ void loop()
   if(bSendSerial) {
     Serial.println("serial communication active");
   }
-
-  // Now listen on the second port
-  mySerialB.listen();
-  //if(bSendSerial){ Serial.print( int(fDist) ); Serial.print("_");Serial.println(strength); }
   if(bSendSerial) { 
     Serial.print("A: ");
     Serial.print( int(fDistA) ); 
     Serial.println("\t"); 
   }
 
+  // Now listen on the second port
+  mySerialB.listen();
   // Take one TF Mini distance measurement
   int16_t distB = tfminiB.getDistance();
   int16_t strengthB = tfminiB.getRecentSignalStrength();
@@ -106,7 +104,6 @@ void loop()
   fDistB = distB * A + fPrevDistB * B;
   fPrevDistB = fDistB;
 
-  //if(bSendSerial){ Serial.print( int(fDist) ); Serial.print("_");Serial.println(strength); }
   if(bSendSerial) { 
     Serial.print("B: ");
     Serial.print( int(fDistB) ); 
