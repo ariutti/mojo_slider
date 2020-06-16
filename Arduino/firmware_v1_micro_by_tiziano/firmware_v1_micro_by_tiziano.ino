@@ -21,7 +21,7 @@ TFMini tfminiA, tfminiB;
 
 #define PAUSE 25
 #define DEBUG
-#define DEBUGVAL
+#define DEBUGVAL true
 #define VVVVSEND
 
 
@@ -152,9 +152,11 @@ void loop()
 #endif
 
   //MEDIA A-B ******************************************/
-
   centerVal = fDistA - fDistB;
-  mapVal = map(centerVal, -78, 92, 0, 1000);
+#ifdef DEBUGVAL
+  Serial.print("Center val: "); Serial.print( centerVal ); Serial.print(" ---> ");
+#endif
+  mapVal = map(centerVal, -93, 65, 0, 1000);
   mapVal = constrain(mapVal, 0, 1000);
 #ifdef VVVVSEND
   Serial.println( int(mapVal) );
