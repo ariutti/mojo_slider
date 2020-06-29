@@ -44,6 +44,7 @@ void Carriage::update()
 			// it means nobady has moved the carriage for a while
 			// so we should go into a standby status
 			status = STANDBY;
+      arsine->reset();
 			return;
 		}
 
@@ -85,6 +86,7 @@ void Carriage::lightLEDs( float _variableIntensity )
 void Carriage::setPos( float _normalized_pos )
 {
 	normalized_pos = _normalized_pos;
+  ledPos = int(normalized_pos*nLeds);
 
 	if( status == STANDBY ) {
 		status = FOLLOW;

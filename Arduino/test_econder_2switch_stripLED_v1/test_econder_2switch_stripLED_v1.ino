@@ -29,8 +29,8 @@
  *
 */
 
-#define DEBUG true
-#define bToVVVV false
+#define DEBUG false
+#define bToVVVV true
 
 // ENCODER STUFF
 
@@ -64,8 +64,8 @@ volatile enum STATE {
 
 
 // RESETS STUFF
-#define RESET_L   4
-#define RESET_R   5
+#define RESET_L   7
+#define RESET_R   6
 
 
 #include "ButtonDebounce.h"
@@ -111,7 +111,7 @@ void reset_right_cb(int state){
 #define LEDPIN    9 // On Trinket or Gemma, suggest changing this to 1
 
 // How many NeoPixels are attached to the Arduino?
-#define NUMPIXELS 7 // TODO: change here according to your number of LEDs in the strip
+#define NUMPIXELS 144 // TODO: change here according to your number of LEDs in the strip
 
 // When setting up the NeoPixel library, we tell it how many pixels,
 // and which pin to use to send signals. Note that for older NeoPixel
@@ -165,6 +165,9 @@ void loop()
   reset_right.update();
 
 	carriage.update();
+
+  if( DEBUG )
+    carriage.debug();
 
 
 	//where the maιc happens (so to say)

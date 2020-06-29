@@ -19,7 +19,7 @@ class Carriage
 		// must define sidelobe dimension first
 		// this is a monolateral dimension.
 		// SIDELOBE is
-		const int SIDELOBE = 4;
+		const int SIDELOBE = 8;
 		// nust define also the number of LEDs which are masked below
 		// the carriage (it is counterproductive to light up them).
 		// Actually, as for SIDELOBE, we are interested in getting
@@ -27,7 +27,7 @@ class Carriage
 		// HALFMASK is the number of LED which are aside from the LED pos
 		// you don't want to shine at the same brightness of SIDEBOLEs
 		int HALFMASK;
-		float MASKLIGHTLVL = 0.25;
+		float MASKLIGHTLVL = 0.0;
 		float MAXLIGHTLVL  = 1.0;
 		// then we declare an array that will work as a lookup table
 		// for the squared-raised-cosine figure.
