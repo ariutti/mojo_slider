@@ -8,6 +8,34 @@ Arduino sketches to create a slider using different kind of sensors:
 
 This is still a WIP
 
+## Note on the new implementation (w/ optical encoder and two optical forks)
+
+This new implementation uses a 100 steps optical encoder (which are subdivided in 4 steps inside the Arduino code) in tandem w/ 2 Panasonic PM45 optical switches to make resets.
+
+Knowing that we are making a total of 100 steps per encoder shaft full rotation (400 raw step into the Arduino code) and the carriage is moving 186 mm of linear distance in a full encoder rotation we know that:
+
+* A single encoder step (4 raw steps) represents a carriage linear movement of 1.86 mm;
+
+We also know that (from empirical experimens):
+
+* using a maximum force we can move the carriage from the extreme left and right corners of the slider in 0.3 s (300ms);
+* and that there's a distance of 1952 steps for the full lenght of the slider (wich corresponds to 907,6 mm of run - see calculation below)
+
+	400(steps):186(mm)=1952(steps):x(mm)
+	
+	x = 1952 * 1.86 / 400 = 907,6 mm (a full meter almost)
+
+It means that Arduino is requested to crunch 1952 isp (interrupt service routine) in 0,3(s).
+Making a quick proportion:
+
+	1952(isps):0.3(s)=x(isps):1(s)
+	
+	x = 1952 * 1 / 0.3 = 6506 (isps per second approx) --> 6.5 KHz
+
+which means we have a step every 150µs (see calculation below):
+
+	1 / 6506 = 0,00015 (s) = 0,15 (ms) = 150 µs
+
 ## Intersting things:
 
 * Lidar Lite v3 [lidar](https://www.robot-italy.com/it/lidar-lite-v3.html) for Arduino (5 cm to 40 meters - 1cm accuracy);

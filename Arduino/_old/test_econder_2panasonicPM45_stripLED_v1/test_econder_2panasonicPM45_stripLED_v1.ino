@@ -1,5 +1,15 @@
 /*
  * CIRCUIT
+ * 
+ *                  O
+ * [________________A________________________]
+ *  
+ *  left                                right
+ *  reset                               reset
+ *  
+ *                                    encoder
+ *                            strip frist LED
+ *                            
  *
  * Component:
  * - 1x Arduino micro;
@@ -34,8 +44,16 @@
 // 2020-08-27 - discard the debounce objects because we are not using mechanical 
 // switch anymore so we don't need to do debounce
 
-#define DEBUG true
 #define bToVVVV false
+
+// debug info about the Panasonic optical switches
+#define DEBUG_RESET true
+// debug info about the encoder, leds, scales and state machine
+#define DEBUG_CARRIAGE true
+
+
+bool USE_RESET_L = true;
+bool USE_RESET_R = true;
 
 // ENCODER STUFF
 
@@ -47,7 +65,8 @@
 volatile byte bCurrent = 0;
 volatile byte bPrevious = 0;
 volatile long integrator = 0;
-long prevIntegrator = 0;
+volatile long prevIntegrator = 0;
+
 volatile enum STATE {
   ENC_IDLE,
   ENC_CW,
@@ -64,7 +83,7 @@ volatile enum STATE {
 // whose the carriage movement must ne mapped to, we
 // must define some MACRO here
 #define MAX_MM 100 // travel lenght if the carriage in mm
-#define MAX_STEPS 400*1 // travel lenght expressed in encoder steps
+#define MAX_STEPS 1791 // travel lenght expressed in encoder steps
 
 
 // RESETS STUFF
@@ -72,6 +91,17 @@ volatile enum STATE {
 #define RESET_R   6
 
 
+typedef struct {
+  int pin;
+  bool curr = false;
+  bool prev = false;
+} reset;
+
+reset resetL;
+reset resetR; 
+
+
+/*
 #include "ButtonDebounce.h"
 // (ButtonDebounce Library is written and maintained
 // by Maykon L. Capellari <maykonluiscapellari@gmail.com>
@@ -107,7 +137,7 @@ void reset_right_cb(int state){
     }
   }
 }
-
+*/
 
 // LED STUFF
 
@@ -145,15 +175,16 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(CHA),   ISR_chA,   CHANGE);
   attachInterrupt(digitalPinToInterrupt(CHB),   ISR_chB,   CHANGE);
 
-
   // RESETs STUFF
-  pinMode(RESET_L, INPUT_PULLUP);
-  pinMode(RESET_R, INPUT_PULLUP);
+  resetL.pin = RESET_L;
+  resetR.pin = RESET_R;
+  
+  pinMode(resetL.pin, INPUT_PULLUP);
+  pinMode(resetR.pin, INPUT_PULLUP);
 
-  reset_left.setCallback( reset_left_cb );
-  reset_right.setCallback( reset_right_cb );
-
-
+  //reset_left.setCallback( reset_left_cb );
+  //reset_right.setCallback( reset_right_cb );
+  
 	carriage.init(&strip, 3);
 }
 
@@ -161,19 +192,54 @@ void setup()
 // LOOP //////////////////////////////////////////////////////////////
 void loop()
 {
+
+  // serial data
+  getSerialData();
+
+  
   // RESETs STUFF
-  reset_left.update();
-  reset_right.update();
+  //reset_left.update();
+  //reset_right.update();
+
+  /*
+  if( USE_RESET_L ) {
+    resetL.curr = digitalRead( resetL.pin );
+    if( resetL.curr != resetL.prev) {
+      resetL.prev = resetL.curr;
+      integrator = MAX_STEPS;
+      if( !resetL.curr ) {
+        Serial.println("Reset L touched");
+      } else {
+        Serial.println("Reset L released");
+      }
+    }
+  }
+
+  if( USE_RESET_R ) {
+    resetR.curr = digitalRead( resetR.pin );
+    if( resetR.curr != resetR.prev) {
+      resetR.prev = resetR.curr;
+      integrator = 0;
+      if( !resetR.curr ) {
+        if( DEBUG_RESET )
+          Serial.println("Reset R touched");
+      } else {
+        if( DEBUG_RESET )
+          Serial.println("Reset R released");
+      }
+    }
+  }
+
+  if( !resetL.curr ) {
+    integrator = MAX_STEPS;
+  }
+
+  if( !resetR.curr ) {
+    integrator = 0;
+  }
+  */
 
 	carriage.update();
-
-  if( DEBUG )
-  {
-    Serial.print("raw: ");
-    Serial.print( integrator );
-
-    carriage.debug();
-  }
 
 
 	//where the maιc happens (so to say)
@@ -189,9 +255,13 @@ void loop()
 		}
 		// eventually update the old integrator
 		prevIntegrator = integrator;
+
+    Serial.print("raw: ");
+    Serial.print( integrator );
+    carriage.debug();
 	}
 
-  delay( 10 );
+  delay( 1 );
 }
 
 // OTHER STUFF ///////////////////////////////////////////////////////
@@ -225,6 +295,7 @@ void decode()
     {
       status = ENC_CW;
       integrator ++;
+      
     }
     else if(
         ( bCurrent == 1 && bPrevious == 0 ) ||
@@ -247,4 +318,29 @@ void decode()
   // to a signal which is unipolar going from 0 to 400;
   if( integrator < 0)
     integrator = TOTALSTEPSPERROTATION + integrator;
+}
+
+
+void getSerialData()
+{
+  if(Serial.available())
+  {
+    // Read user input and trigger appropriate function
+    char user_input = Serial.read();
+
+      if(user_input == 'q' ) 
+      {
+        // reset left
+        integrator = 0;
+      }
+      else if( user_input == 'w' )
+      {
+        // reset right
+        integrator = 2000;
+      }
+      else
+      {
+        //Serial.println("Invalid option entered.");
+      }
+  }
 }
