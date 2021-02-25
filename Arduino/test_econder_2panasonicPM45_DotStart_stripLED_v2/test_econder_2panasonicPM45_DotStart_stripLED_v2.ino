@@ -216,9 +216,9 @@ void loop()
     
     // update position to the carriage for the LEDs to follow the movement
     if( B_FLIP ) {
-		  carriage.setPos( 1.0 - normPos );
+		  carriage.setPos( 1.0 - normPos, B_FLIP );
     } else {
-      carriage.setPos( normPos );
+      carriage.setPos( normPos, B_FLIP );
     }
     
 		// and also to notify VVVV
